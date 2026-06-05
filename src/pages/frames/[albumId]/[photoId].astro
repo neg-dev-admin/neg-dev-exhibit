@@ -1,0 +1,28 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import PhotoDetail from "../../../components/PhotoDetail";
+import {
+    fetchExhibitManifest,
+    getPhotoNavigation,
+} from "../../../lib/exhibit-data";
+
+export async function getStaticPaths() {
+    const manifest = await fetchExhibitManifest();
+
+    return manifest.albums.flatMap((album) => {
+        return album.photos.map((photo) => {
+            const nav = getPhotoNavigation(album, photo.lightroom_id);
+            return {
+                params: { albumId: album.id, photoId: photo.lightroom_id },
+                props: { photo, nav, albumId: album.id },
+            };
+        });
+    });
+}
+
+const { photo, nav, albumId } = Astro.props;
+---
+
+<Layout title={`SILVER STILL: ${photo.title}`}>
+    <PhotoDetail client:load photo={photo} nav={nav} albumId={albumId} />
+</Layout>

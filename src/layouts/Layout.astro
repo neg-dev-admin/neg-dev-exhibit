@@ -1,0 +1,93 @@
+---
+import "../styles/global.css";
+import { fetchExhibitManifest } from "../lib/exhibit-data";
+
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
+
+// Fetch manifest strictly for footer links.
+const manifest = await fetchExhibitManifest();
+const currentYear = new Date().getFullYear();
+const { exhibit_info } = manifest;
+
+import CartIndicator from "../components/CartIndicator";
+import { toAttributeString } from "astro/runtime/server/render/util.js";
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="description" content="Exhibit Gallery" />
+        <meta name="viewport" content="width=device-width" />
+        <link
+            rel="icon"
+            type="image/png"
+            href={import.meta.env.S3_LOGO_URL || "/logo.png"}
+        />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+    </head>
+    <body
+        class="bg-background text-foreground min-h-screen flex flex-col relative font-sans"
+        style={{
+            "--color-background": exhibit_info?.settings?.bg_color || "#0a0a0a",
+            "--color-foreground":
+                exhibit_info?.settings?.text_color || "#f5f5f5",
+            "--color-accent": exhibit_info?.settings?.accent_color || "#ffffff",
+            "--color-button":
+                exhibit_info?.settings?.button_color ||
+                exhibit_info?.settings?.accent_color ||
+                "#ffffff",
+            "--font-heading":
+                exhibit_info?.settings?.font_heading || "sans-serif",
+            "--font-body": exhibit_info?.settings?.font_body || "sans-serif",
+        }}
+    >
+        <CartIndicator client:only="react" />
+
+        {/* Site Header */}
+        <header
+            class="w-full py-8 flex justify-center top-0 bg-background/90 backdrop-blur-sm z-50 sticky"
+        >
+            <a href="/" class="block hover:opacity-80 transition-opacity">
+                <img
+                    src={import.meta.env.S3_LOGO_URL || "/logo.png"}
+                    alt={title}
+                    class="h-20 w-auto"
+                    onerror="this.style.display='none'"
+                />
+            </a>
+        </header>
+
+        {/* content slot - flex grow to push footer down */}
+        <div
+            class="bg-background flex-grow flex items-center justify-center w-full"
+        >
+            <slot />
+        </div>
+
+        {/* Site Footer */}
+        <footer class="w-full py-12 mt-16 text-center bg-background">
+            <nav class="mb-8 flex flex-wrap justify-center gap-8">
+                {
+                    manifest.albums.map((album) => (
+                        <a
+                            href={`/frames/${album.id}/${album.photos[0].lightroom_id}`}
+                            class="text-xs uppercase tracking-widest text-foreground/50 hover:text-foreground transition-colors"
+                        >
+                            {album.album_name}
+                        </a>
+                    ))
+                }
+            </nav>
+            <p class="text-[10px] text-foreground/40 uppercase tracking-widest">
+                ©{currentYear}
+                {manifest.artist_info.name}
+            </p>
+        </footer>
+    </body>
+</html>

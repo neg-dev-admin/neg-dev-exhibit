@@ -1,0 +1,139 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { fetchExhibitManifest } from "../lib/exhibit-data";
+import { marked } from "marked";
+import sanitizeHtml from "sanitize-html";
+
+const manifest = await fetchExhibitManifest();
+const { albums, exhibit_info } = manifest;
+
+const rawHtml = exhibit_info?.artist_statement
+	? await marked.parse(exhibit_info.artist_statement)
+	: "";
+
+const artistStatementHtml = sanitizeHtml(rawHtml, {
+	allowedTags: ["b", "i", "em", "strong", "p", "br"],
+	allowedAttributes: {},
+});
+
+const exhibitTitle = exhibit_info?.exhibit_name
+	? exhibit_info.exhibit_name.toUpperCase()
+	: "EXHIBIT";
+---
+
+<Layout title={exhibitTitle}>
+	<main class="container mx-auto px-4 py-16">
+		<!-- Checkout Success Leica-themed Banner -->
+		<div
+			id="checkout-success-banner"
+			class="hidden mb-12 bg-emerald-950/20 border border-emerald-500/50 p-6 rounded-lg text-center text-emerald-200 animate-in fade-in slide-in-from-top duration-300 max-w-2xl mx-auto"
+		>
+			<div class="flex flex-col items-center gap-2">
+				<span class="text-xl font-bold uppercase tracking-widest text-emerald-400">Order Placed</span>
+				<p class="text-sm font-light leading-relaxed">
+					Congratulations! Your order has been placed. Check your email for order status and please <a href={`mailto:${manifest.artist_info.email || ""}`} class="underline hover:text-white font-medium">contact us</a> if you have any questions.
+				</p>
+			</div>
+		</div>
+
+		<div
+			class="flex flex-wrap justify-center gap-16 w-full max-w-7xl mx-auto"
+		>
+			{
+				albums.map((album) => {
+					const coverPhoto = album.photos[0];
+
+					return (
+						<a
+							href={`/frames/${album.id}/${coverPhoto?.lightroom_id}`}
+							class="group block w-full md:w-[400px]"
+						>
+							<div class="relative aspect-[4/3] overflow-hidden bg-foreground/5 mb-6 transition-transform duration-500 ease-out group-hover:scale-[1.01] shadow-2xl">
+								{coverPhoto?.cover_url && (
+									<img
+										src={coverPhoto.cover_url}
+										alt={album.album_name}
+										class="w-full h-full object-cover transition-opacity duration-500 opacity-90 group-hover:opacity-100"
+										loading="lazy"
+									/>
+								)}
+							</div>
+							<div class="text-center">
+								<h2 class="text-2xl font-light tracking-widest text-foreground/90 group-hover:text-foreground transition-colors uppercase">
+									{album.album_name}
+								</h2>
+								<p class="text-sm text-foreground/50 uppercase tracking-[0.2em] mt-3 group-hover:text-foreground/70">
+									{album.photos.length} Photographs
+								</p>
+							</div>
+						</a>
+					);
+				})
+			}
+		</div>
+		<div class="flex flex-col mt-24 items-center text-center">
+			{
+				import.meta.env.S3_ARTIST_URL && (
+					<img
+						src={import.meta.env.S3_ARTIST_URL}
+						alt="Artist"
+						class="w-48 rounded-none mx-auto mb-4"
+						onerror="this.style.display='none'"
+					/>
+				)
+			}
+			<h2
+				class="text-2xl font-light tracking-widest text-foreground/60 group-hover:text-foreground transition-colors uppercase"
+			>
+				ABOUT THE ARTIST
+			</h2>
+			<div
+				class="text-foreground/80 prose prose-invert prose-neutral leading-widest max-w-96 text-left mt-4 prose-p:text-foreground/80 prose-headings:text-foreground"
+				set:html={artistStatementHtml}
+			/>
+		</div>
+		<div class="flex flex-col mt-24 items-center text-center">
+			<h2
+				class="text-2xl font-light tracking-widest text-foreground/60 group-hover:text-foreground transition-colors uppercase"
+			>
+				ORDERING PRINTS
+			</h2>
+			<div
+				class="text-foreground/80 prose prose-invert prose-neutral leading-widest max-w-96 text-left mt-4 prose-p:text-foreground/80"
+			>
+				<p>
+					Prints ordered from {
+						exhibit_info?.exhibit_name || "the exhibit"
+					} are printed on high-quality fiber-based paper using archival
+					pigments. Prints will be drop-shipped directly from the printer
+					and typically ship within 3 days of your order.
+				</p>
+				<p>
+					Framed prints include a custom wood frame and anti-glare
+					clear acrylic.
+				</p>
+			</div>
+		</div>
+	</main>
+</Layout>
+
+<script>
+	import { cartStore } from "../lib/cart-store";
+
+	// Check if URL has ?checkout_success=true
+	const urlParams = new URLSearchParams(window.location.search);
+	if (urlParams.get("checkout_success") === "true") {
+		// Clear cart
+		cartStore.clear();
+
+		// Show banner
+		const banner = document.getElementById("checkout-success-banner");
+		if (banner) {
+			banner.classList.remove("hidden");
+		}
+
+		// Clean URL
+		const cleanUrl = window.location.pathname;
+		window.history.replaceState({}, document.title, cleanUrl);
+	}
+</script>

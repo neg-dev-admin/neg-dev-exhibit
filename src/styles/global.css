@@ -1,0 +1,48 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-accent: var(--color-accent);
+  --color-button: var(--color-button);
+
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-heading), ui-serif, Georgia, serif;
+
+  /* Dynamic Palettes generated from base colors using CSS color-mix */
+  /* Assumes base color is ~500 weight */
+
+  /* Foreground Palette (Text Color) */
+  --color-foreground-50: color-mix(in srgb, var(--color-foreground), white 90%);
+  --color-foreground-100: color-mix(in srgb, var(--color-foreground), white 80%);
+  --color-foreground-200: color-mix(in srgb, var(--color-foreground), white 60%);
+  --color-foreground-300: color-mix(in srgb, var(--color-foreground), white 40%);
+  --color-foreground-400: color-mix(in srgb, var(--color-foreground), white 20%);
+  --color-foreground-500: var(--color-foreground);
+  --color-foreground-600: color-mix(in srgb, var(--color-foreground), black 20%);
+  --color-foreground-700: color-mix(in srgb, var(--color-foreground), black 40%);
+  --color-foreground-800: color-mix(in srgb, var(--color-foreground), black 60%);
+  --color-foreground-900: color-mix(in srgb, var(--color-foreground), black 80%);
+  --color-foreground-950: color-mix(in srgb, var(--color-foreground), black 90%);
+
+  /* Background Palette (for dark mode variants if base is dark?) */
+  /* Actually user might select a light background. Mixing with black makes it darker. */
+  --color-background-50: color-mix(in srgb, var(--color-background), white 90%);
+  --color-background-100: color-mix(in srgb, var(--color-background), white 80%);
+  --color-background-200: color-mix(in srgb, var(--color-background), white 60%);
+  --color-background-300: color-mix(in srgb, var(--color-background), white 40%);
+  --color-background-400: color-mix(in srgb, var(--color-background), white 20%);
+  --color-background-500: var(--color-background);
+  --color-background-600: color-mix(in srgb, var(--color-background), black 20%);
+  --color-background-700: color-mix(in srgb, var(--color-background), black 40%);
+  --color-background-800: color-mix(in srgb, var(--color-background), black 60%);
+  --color-background-900: color-mix(in srgb, var(--color-background), black 80%);
+  --color-background-950: color-mix(in srgb, var(--color-background), black 90%);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}

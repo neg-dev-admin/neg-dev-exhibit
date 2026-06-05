@@ -1,0 +1,58 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { fetchExhibitManifest, getAlbumById } from "../../../lib/exhibit-data";
+import type { ExhibitManifest } from "../../../types";
+
+export async function getStaticPaths() {
+    const manifest = await fetchExhibitManifest();
+    return manifest.albums.map((album) => ({
+        params: { albumId: album.id },
+        props: { album },
+    }));
+}
+
+const { album } = Astro.props;
+---
+
+<Layout title={`SILVER STILL: ${album.album_name}`}>
+    <main class="container mx-auto px-4 py-8">
+        <nav class="mb-8 flex items-center justify-between">
+            <a
+                href="/"
+                class="text-neutral-500 hover:text-white transition-colors uppercase text-xs tracking-widest"
+            >
+                ← Return to Albums
+            </a>
+            <h1
+                class="text-xl text-center text-white font-light tracking-widest uppercase"
+            >
+                {album.album_name}
+            </h1>
+            <div class="w-24"></div>
+            <!-- Spacer for centering -->
+        </nav>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
+            {
+                album.photos.map((photo) => (
+                    <a
+                        href={`/frames/${album.id}/${photo.lightroom_id}`}
+                        class="group block relative aspect-square bg-neutral-900 overflow-hidden"
+                    >
+                        <img
+                            src={photo.cover_url}
+                            alt={photo.title}
+                            class="w-full h-full object-cover transition-all duration-700 ease-in-out group-hover:scale-105 group-hover:opacity-100 opacity-90"
+                            loading="lazy"
+                        />
+                        <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <p class="text-white text-sm font-light tracking-wide truncate">
+                                {photo.title}
+                            </p>
+                        </div>
+                    </a>
+                ))
+            }
+        </div>
+    </main>
+</Layout>
