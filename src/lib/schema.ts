@@ -58,6 +58,7 @@ export const ExhibitInfoSchema = z.object({
     exhibit_name: z.string().nullable().optional(),
     artist_statement: z.string().nullable().optional(),
     settings: ExhibitSettingsSchema.optional(),
+    enable_gallery_sales: z.boolean().optional(),
 });
 
 export const GalleryManifestSchema = z.object({

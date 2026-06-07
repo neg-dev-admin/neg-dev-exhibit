@@ -8,21 +8,22 @@ import {
 
 export async function getStaticPaths() {
     const manifest = await fetchExhibitManifest();
+    const enableGallerySales = manifest.exhibit_info?.enable_gallery_sales !== false;
 
     return manifest.albums.flatMap((album) => {
         return album.photos.map((photo) => {
             const nav = getPhotoNavigation(album, photo.lightroom_id);
             return {
                 params: { albumId: album.id, photoId: photo.lightroom_id },
-                props: { photo, nav, albumId: album.id },
+                props: { photo, nav, albumId: album.id, enableGallerySales },
             };
         });
     });
 }
 
-const { photo, nav, albumId } = Astro.props;
+const { photo, nav, albumId, enableGallerySales } = Astro.props;
 ---
 
 <Layout title={`SILVER STILL: ${photo.title}`}>
-    <PhotoDetail client:load photo={photo} nav={nav} albumId={albumId} />
+    <PhotoDetail client:load photo={photo} nav={nav} albumId={albumId} enableGallerySales={enableGallerySales} />
 </Layout>

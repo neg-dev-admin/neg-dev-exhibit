@@ -9,6 +9,7 @@ export interface ExhibitManifest {
         exhibit_name: string;
         exhibit_url: string;
         artist_statement: string;
+        enable_gallery_sales?: boolean;
     }
 
     generated_at: string; // ISO Date

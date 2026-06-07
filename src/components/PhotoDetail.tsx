@@ -8,9 +8,10 @@ interface PhotoDetailProps {
     photo: ExhibitPhoto;
     nav: NavLinks;
     albumId: string;
+    enableGallerySales?: boolean;
 }
 
-export default function PhotoDetail({ photo, nav, albumId }: PhotoDetailProps) {
+export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = true }: PhotoDetailProps) {
     const [selectedSizeKey, setSelectedSizeKey] = useState<string>(
         photo.pricing_matrix?.[0]?.size || ''
     );
@@ -203,110 +204,114 @@ export default function PhotoDetail({ photo, nav, albumId }: PhotoDetailProps) {
             </div>
 
             {/* Slide-Up Menu */}
-            <div
-                className={`fixed inset-x-0 bottom-0 bg-accent/80 backdrop-blur-md border-t border-foreground/10 transition-transform duration-500 ease-in-out z-40 pb-36 pt-8 px-8 flex justify-center ${isMenuOpen ? 'translate-y-0' : 'translate-y-[120%]'
-                    }`}
-            >
-                <div className="w-full max-w-4xl flex flex-col gap-6 items-center justify-center">
-
-                    <div className="flex flex-col w-full gap-8">
-
-                        <div className="flex flex-col items-center">
-                            <label className="block text-[10px] uppercase tracking-widest text-foreground/60 mb-2">Print Size</label>
-                            <div className="flex flex-wrap justify-center gap-2">
-                                {photo.pricing_matrix?.map((pm) => (
-                                    <button
-                                        key={pm.size}
-                                        onClick={() => setSelectedSizeKey(pm.size)}
-                                        className={`px-4 py-2 text-xs border transition-all duration-200 ${selectedSizeKey === pm.size
-                                            ? 'border-accent text-background bg-accent'
-                                            : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
-                                            }`}
-                                    >
-                                        {pm.size}
-                                    </button>
-                                ))}
+            {enableGallerySales && (
+                <div
+                    className={`fixed inset-x-0 bottom-0 bg-accent/80 backdrop-blur-md border-t border-foreground/10 transition-transform duration-500 ease-in-out z-40 pb-36 pt-8 px-8 flex justify-center ${isMenuOpen ? 'translate-y-0' : 'translate-y-[120%]'
+                        }`}
+                >
+                    <div className="w-full max-w-4xl flex flex-col gap-6 items-center justify-center">
+    
+                        <div className="flex flex-col w-full gap-8">
+    
+                            <div className="flex flex-col items-center">
+                                <label className="block text-[10px] uppercase tracking-widest text-foreground/60 mb-2">Print Size</label>
+                                <div className="flex flex-wrap justify-center gap-2">
+                                    {photo.pricing_matrix?.map((pm) => (
+                                        <button
+                                            key={pm.size}
+                                            onClick={() => setSelectedSizeKey(pm.size)}
+                                            className={`px-4 py-2 text-xs border transition-all duration-200 ${selectedSizeKey === pm.size
+                                                ? 'border-accent text-background bg-accent'
+                                                : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
+                                                }`}
+                                        >
+                                            {pm.size}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-
-                        {/* Row 2: Frame Selector (Replaces simple Toggle) */}
-                        <div className={`flex flex-col items-center w-full transition-opacity duration-300 ${!isFrameableSize ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
-                            <label className="block text-[10px] uppercase tracking-widest text-foreground/60 mb-2">
-                                {isFrameableSize ? 'Frame Style' : 'Framing Unavailable for Large Prints'}
-                            </label>
-                            <div className="flex gap-2 overflow-x-auto max-w-full pb-2 no-scrollbar mask-linear-fade px-4">
-                                {FRAME_STYLES.map(style => (
-                                    <button
-                                        key={style.id}
-                                        onClick={() => isFrameableSize && setFrameStyle(style.id)}
-                                        disabled={!isFrameableSize}
-                                        className={`px-4 py-2 text-xs border whitespace-nowrap transition-all duration-200 ${frameStyle === style.id
-                                            ? 'border-accent text-background bg-accent'
-                                            : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
-                                            }`}
-                                    >
-                                        {style.label}
-                                    </button>
-                                ))}
+    
+                            {/* Row 2: Frame Selector (Replaces simple Toggle) */}
+                            <div className={`flex flex-col items-center w-full transition-opacity duration-300 ${!isFrameableSize ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
+                                <label className="block text-[10px] uppercase tracking-widest text-foreground/60 mb-2">
+                                    {isFrameableSize ? 'Frame Style' : 'Framing Unavailable for Large Prints'}
+                                </label>
+                                <div className="flex gap-2 overflow-x-auto max-w-full pb-2 no-scrollbar mask-linear-fade px-4">
+                                    {FRAME_STYLES.map(style => (
+                                        <button
+                                            key={style.id}
+                                            onClick={() => isFrameableSize && setFrameStyle(style.id)}
+                                            disabled={!isFrameableSize}
+                                            className={`px-4 py-2 text-xs border whitespace-nowrap transition-all duration-200 ${frameStyle === style.id
+                                                ? 'border-accent text-background bg-accent'
+                                                : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
+                                                }`}
+                                        >
+                                            {style.label}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-
-                        {/* Row 3: Add to Cart */}
-                        <div className="flex flex-col items-center w-full max-w-md mx-auto pt-4 gap-4">
-                            <div className="text-3xl font-light text-foreground">
-                                {formattedPrice}
+    
+                            {/* Row 3: Add to Cart */}
+                            <div className="flex flex-col items-center w-full max-w-md mx-auto pt-4 gap-4">
+                                <div className="text-3xl font-light text-foreground">
+                                    {formattedPrice}
+                                </div>
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="w-full bg-button/80 p-4 text-sm uppercase tracking-widest font-bold hover:bg-button transition-opacity shadow-lg"
+                                >
+                                    Add to Cart
+                                </button>
                             </div>
-                            <button
-                                onClick={handleAddToCart}
-                                className="w-full bg-button/80 p-4 text-sm uppercase tracking-widest font-bold hover:bg-button transition-opacity shadow-lg"
-                            >
-                                Add to Cart
-                            </button>
+    
                         </div>
-
                     </div>
                 </div>
-            </div>
-
-
-
+            )}
+    
+    
+    
             {/* Sticky Bottom Stripe */}
             <div className="flex md:flex-row flex-col fixed bottom-0 left-0 right-0 z-50 bg-accent/20 backdrop-blur-sm border-t border-foreground/20 py-6 px-8 flex justify-between items-center shadow-2xl">
-
+    
                 {/* Column 1: Metadata */}
                 <div className={`${isMenuOpen ? 'hidden md:flex' : 'flex'} flex-col md:flex-row items-center gap-8 overflow-x-auto no-scrollbar mask-linear-fade`}>
                     <div className="flex flex-col">
                         <h1 className="text-xl font-light tracking-wide text-foreground uppercase">{title}</h1>
                         <h2 className="text-sm font-light  text-foreground/60">{photo.metadata?.location}</h2>
                     </div>
-
+    
                     <div className="flex flex-col">
-
+    
                         {photo.metadata?.caption && <span className="text-xs text-foreground/60">{photo.metadata.caption}</span>}
                     </div>
-
+    
                     {/* Metadata Fields */}
                     <div className="flex md:flex-row gap-8 border-l border-foreground/10">
                         {/* Show "Framed" or "Print Only" status in strip */}
-
+    
                         <MetaItem label="City" value={photo.metadata?.city} />
                         <MetaItem label="State" value={photo.metadata?.state} />
                         <MetaItem label="Country" value={photo.metadata?.country} />
                         {photo.metadata?.quantity !== "∞" && <MetaItem label="Limited Edition" value={photo.metadata?.quantity} />}
                     </div>
                 </div>
-
+    
                 {/* Column 2: Toggle Button */}
-                <div className="flex md:flex-shrink-0 p-4">
-                    <button
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className={`w-12 h-12 flex items-center justify-center rounded-full bg-button/80 hover:bg-button/90 transition-all duration-300 ${isMenuOpen ? 'rotate-45' : ''}`}
-                        aria-label="Toggle Menu"
-                    >
-                        <span className="text-2xl font-light leading-none relative top-[-1px]">+</span>
-                    </button>
-                </div>
-
+                {enableGallerySales && (
+                    <div className="flex md:flex-shrink-0 p-4">
+                        <button
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className={`w-12 h-12 flex items-center justify-center rounded-full bg-button/80 hover:bg-button/90 transition-all duration-300 ${isMenuOpen ? 'rotate-45' : ''}`}
+                            aria-label="Toggle Menu"
+                        >
+                            <span className="text-2xl font-light leading-none relative top-[-1px]">+</span>
+                        </button>
+                    </div>
+                )}
+    
             </div>
 
         </div >

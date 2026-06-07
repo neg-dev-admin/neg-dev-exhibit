@@ -47,7 +47,7 @@ import { toAttributeString } from "astro/runtime/server/render/util.js";
             "--font-body": exhibit_info?.settings?.font_body || "sans-serif",
         }}
     >
-        <CartIndicator client:only="react" />
+        {exhibit_info?.enable_gallery_sales !== false && <CartIndicator client:only="react" />}
 
         {/* Site Header */}
         <header

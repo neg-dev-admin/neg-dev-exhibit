@@ -92,28 +92,30 @@ const exhibitTitle = exhibit_info?.exhibit_name
 				set:html={artistStatementHtml}
 			/>
 		</div>
-		<div class="flex flex-col mt-24 items-center text-center">
-			<h2
-				class="text-2xl font-light tracking-widest text-foreground/60 group-hover:text-foreground transition-colors uppercase"
-			>
-				ORDERING PRINTS
-			</h2>
-			<div
-				class="text-foreground/80 prose prose-invert prose-neutral leading-widest max-w-96 text-left mt-4 prose-p:text-foreground/80"
-			>
-				<p>
-					Prints ordered from {
-						exhibit_info?.exhibit_name || "the exhibit"
-					} are printed on high-quality fiber-based paper using archival
-					pigments. Prints will be drop-shipped directly from the printer
-					and typically ship within 3 days of your order.
-				</p>
-				<p>
-					Framed prints include a custom wood frame and anti-glare
-					clear acrylic.
-				</p>
+		{exhibit_info?.enable_gallery_sales !== false && (
+			<div class="flex flex-col mt-24 items-center text-center">
+				<h2
+					class="text-2xl font-light tracking-widest text-foreground/60 group-hover:text-foreground transition-colors uppercase"
+				>
+					ORDERING PRINTS
+				</h2>
+				<div
+					class="text-foreground/80 prose prose-invert prose-neutral leading-widest max-w-96 text-left mt-4 prose-p:text-foreground/80"
+				>
+					<p>
+						Prints ordered from {
+							exhibit_info?.exhibit_name || "the exhibit"
+						} are printed on high-quality fiber-based paper using archival
+						pigments. Prints will be drop-shipped directly from the printer
+						and typically ship within 3 days of your order.
+					</p>
+					<p>
+						Framed prints include a custom wood frame and anti-glare
+						clear acrylic.
+					</p>
+				</div>
 			</div>
-		</div>
+		)}
 	</main>
 </Layout>
 

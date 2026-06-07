@@ -5,6 +5,10 @@ import { fetchExhibitManifest } from "../lib/exhibit-data";
 
 // Fetch manifest to pass to client component for data lookup
 const manifest = await fetchExhibitManifest();
+
+if (manifest.exhibit_info?.enable_gallery_sales === false) {
+    return Astro.redirect("/");
+}
 ---
 
 <Layout title="Shopping Cart | SILVER STILL">
