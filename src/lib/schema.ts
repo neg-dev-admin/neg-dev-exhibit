@@ -18,6 +18,8 @@ export const PhotoMetadataSchema = z.object({
     status: z.enum(['available', 'nfs', 'sold', 'hidden']).optional(),
     width: z.number().optional(),
     height: z.number().optional(),
+    is_framed: z.boolean().optional(),
+    isFramed: z.boolean().optional(),
 });
 
 export const GalleryPhotoSchema = z.object({

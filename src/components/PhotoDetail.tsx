@@ -16,7 +16,8 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
         photo.pricing_matrix?.[0]?.size || ''
     );
     // We now track frameStyle directly. 'none' implies unframed.
-    const [frameStyle, setFrameStyle] = useState<string>('none');
+    const isAlreadyFramed = photo.metadata?.is_framed === true || photo.metadata?.isFramed === true;
+    const [frameStyle, setFrameStyle] = useState<string>(isAlreadyFramed ? 'artist' : 'none');
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
     // Filter Logic: Check if size is frameable (Max 20x30)
@@ -31,12 +32,12 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
 
     // Auto-reset frame if size becomes too big
     useEffect(() => {
-        if (!isFrameableSize && frameStyle !== 'none') {
+        if (!isAlreadyFramed && !isFrameableSize && frameStyle !== 'none') {
             setFrameStyle('none');
         }
-    }, [selectedSizeKey, isFrameableSize, frameStyle]);
+    }, [selectedSizeKey, isFrameableSize, frameStyle, isAlreadyFramed]);
 
-    const isFramed = frameStyle !== 'none';
+    const isFramed = isAlreadyFramed || frameStyle !== 'none';
 
     // Pricing Logic
     const selectedPricing = useMemo(() => {
@@ -232,26 +233,34 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
                             </div>
     
                             {/* Row 2: Frame Selector (Replaces simple Toggle) */}
-                            <div className={`flex flex-col items-center w-full transition-opacity duration-300 ${!isFrameableSize ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
-                                <label className="block text-[10px] uppercase tracking-widest text-foreground/60 mb-2">
-                                    {isFrameableSize ? 'Frame Style' : 'Framing Unavailable for Large Prints'}
-                                </label>
-                                <div className="flex gap-2 overflow-x-auto max-w-full pb-2 no-scrollbar mask-linear-fade px-4">
-                                    {FRAME_STYLES.map(style => (
-                                        <button
-                                            key={style.id}
-                                            onClick={() => isFrameableSize && setFrameStyle(style.id)}
-                                            disabled={!isFrameableSize}
-                                            className={`px-4 py-2 text-xs border whitespace-nowrap transition-all duration-200 ${frameStyle === style.id
-                                                ? 'border-accent text-background bg-accent'
-                                                : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
-                                                }`}
-                                        >
-                                            {style.label}
-                                        </button>
-                                    ))}
+                            {isAlreadyFramed ? (
+                                <div className="flex flex-col items-center w-full py-2">
+                                    <span className="text-sm font-light text-foreground bg-accent/10 border border-accent/20 px-4 py-2 rounded">
+                                        This print comes framed - see photo
+                                    </span>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className={`flex flex-col items-center w-full transition-opacity duration-300 ${!isFrameableSize ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
+                                    <label className="block text-[10px] uppercase tracking-widest text-foreground/60 mb-2">
+                                        {isFrameableSize ? 'Frame Style' : 'Framing Unavailable for Large Prints'}
+                                    </label>
+                                    <div className="flex gap-2 overflow-x-auto max-w-full pb-2 no-scrollbar mask-linear-fade px-4">
+                                        {FRAME_STYLES.map(style => (
+                                            <button
+                                                key={style.id}
+                                                onClick={() => isFrameableSize && setFrameStyle(style.id)}
+                                                disabled={!isFrameableSize}
+                                                className={`px-4 py-2 text-xs border whitespace-nowrap transition-all duration-200 ${frameStyle === style.id
+                                                    ? 'border-accent text-background bg-accent'
+                                                    : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
+                                                    }`}
+                                            >
+                                                {style.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
     
                             {/* Row 3: Add to Cart */}
                             <div className="flex flex-col items-center w-full max-w-md mx-auto pt-4 gap-4">

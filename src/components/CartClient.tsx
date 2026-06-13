@@ -67,8 +67,9 @@ export default function CartClient({ manifest }: CartClientProps) {
             artistId: manifest.artist_info.uid,
             referrer: window.location.origin,
             items: cart.map(c => {
-                const styleObj = FRAME_STYLES.find(f => f.id === c.frameStyle);
-                const label = styleObj?.label || "None";
+                const label = c.frameStyle === 'artist'
+                    ? 'Framed by Artist'
+                    : (FRAME_STYLES.find(f => f.id === c.frameStyle)?.label || "None");
                 return {
                     id: c.photoId,
                     albumId: c.albumId,
@@ -142,7 +143,9 @@ export default function CartClient({ manifest }: CartClientProps) {
                     }
 
                     const itemPrice = getPrice(item);
-                    const frameLabel = FRAME_STYLES.find(f => f.id === item.frameStyle)?.label || 'Unknown Frame';
+                    const frameLabel = item.frameStyle === 'artist'
+                        ? 'Framed by Artist'
+                        : (FRAME_STYLES.find(f => f.id === item.frameStyle)?.label || 'Unknown Frame');
                     const frameCss = FRAME_STYLES.find(f => f.id === item.frameStyle)?.css || '';
 
                     return (

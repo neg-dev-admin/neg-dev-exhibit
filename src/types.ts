@@ -39,7 +39,8 @@ export interface ExhibitPhoto {
         status?: "available" | "nfs" | "sold" | "hidden";
         width?: number;
         height?: number;
-        // ... other fields
+        is_framed?: boolean;
+        isFramed?: boolean;
     };
     // Pre-calculated pricing for "Quick Shop"
     pricing_matrix: {
