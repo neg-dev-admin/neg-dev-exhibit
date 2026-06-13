@@ -163,7 +163,7 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
                     className={`relative transition-all duration-500 ease-in-out ${FRAME_STYLES.find(f => f.id === frameStyle)?.css || ''}`}
                     style={{ transitionProperty: 'border, box-shadow' }}
                 >
-                    {isFramed && (
+                    {!isAlreadyFramed && frameStyle !== 'none' && (
                         <div className="bg-white" style={{ padding: `${matPaddingPercent}%` }}>
                             <div
                                 className="relative overflow-hidden shadow-inner bg-neutral-100"
@@ -183,13 +183,12 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
                         </div>
                     )}
 
-                    {/* If Unframed: Just Crop Container */}
-                    {!isFramed && (
+                    {(isAlreadyFramed || frameStyle === 'none') && (
                         <div
                             className="relative overflow-hidden shadow-2xl"
                             style={{
                                 aspectRatio: cropAspectRatio,
-                                maxHeight: '75vh', // Allow slightly larger if unframed
+                                maxHeight: '75vh', // Allow slightly larger if unframed/pre-framed
                                 maxWidth: '100%',
                             }}
                         >

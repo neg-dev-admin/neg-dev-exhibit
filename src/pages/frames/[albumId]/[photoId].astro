@@ -22,8 +22,9 @@ export async function getStaticPaths() {
 }
 
 const { photo, nav, albumId, enableGallerySales } = Astro.props;
+const displayTitle = photo.metadata?.title || photo.title || "Untitled";
 ---
 
-<Layout title={`SILVER STILL: ${photo.title}`}>
+<Layout title={displayTitle}>
     <PhotoDetail client:load photo={photo} nav={nav} albumId={albumId} enableGallerySales={enableGallerySales} />
 </Layout>
