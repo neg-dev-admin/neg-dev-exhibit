@@ -12,6 +12,21 @@ export async function getStaticPaths() {
 }
 
 const { album } = Astro.props;
+const manifest = await fetchExhibitManifest();
+const settings = manifest.exhibit_info?.settings;
+const mobileLayout = settings?.mobile_layout || "scroll";
+const desktopLayout = settings?.desktop_layout || "slideshow";
+
+const showScrollOnMobile = mobileLayout === "scroll";
+const showGridOnMobile = mobileLayout === "slideshow";
+
+const scrollClasses = showScrollOnMobile
+    ? "flex flex-col gap-12 items-center w-full max-w-3xl mx-auto py-8 md:hidden"
+    : "hidden";
+
+const gridClasses = showGridOnMobile
+    ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 w-full"
+    : "hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 w-full";
 ---
 
 <Layout title={`SILVER STILL: ${album.album_name}`}>
@@ -32,7 +47,27 @@ const { album } = Astro.props;
             <!-- Spacer for centering -->
         </nav>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
+        {showScrollOnMobile && (
+            <div class={scrollClasses}>
+                {album.photos.map((photo) => (
+                    <a
+                        href={`/frames/${album.id}/${photo.lightroom_id}`}
+                        class="group block w-full"
+                    >
+                        <div class="relative overflow-hidden bg-neutral-950/20 shadow-2xl transition-transform duration-500 hover:scale-[1.01]">
+                            <img
+                                src={photo.cover_url}
+                                alt={photo.title}
+                                class="w-full h-auto object-contain max-h-[70vh] mx-auto block opacity-95 group-hover:opacity-100 transition-opacity duration-300"
+                                loading="lazy"
+                            />
+                        </div>
+                    </a>
+                ))}
+            </div>
+        )}
+
+        <div class={gridClasses}>
             {
                 album.photos.map((photo) => (
                     <a

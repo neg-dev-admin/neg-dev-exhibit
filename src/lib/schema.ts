@@ -54,6 +54,10 @@ export const ExhibitSettingsSchema = z.object({
     // Fonts (URL or Name) - simplified for now to generic families or specific Google Fonts if implemented later
     font_heading: z.string().optional(),
     font_body: z.string().optional(),
+
+    // Navigation/Layout Preferences
+    mobile_layout: z.enum(['scroll', 'slideshow']).optional(),
+    desktop_layout: z.enum(['slideshow', 'grid']).optional(),
 });
 
 export const ExhibitInfoSchema = z.object({

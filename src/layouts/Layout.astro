@@ -76,7 +76,7 @@ import { toAttributeString } from "astro/runtime/server/render/util.js";
                 {
                     manifest.albums.map((album) => (
                         <a
-                            href={`/frames/${album.id}/${album.photos[0].lightroom_id}`}
+                            href={`/frames/${album.id}`}
                             class="text-xs uppercase tracking-widest text-foreground/50 hover:text-foreground transition-colors"
                         >
                             {album.album_name}

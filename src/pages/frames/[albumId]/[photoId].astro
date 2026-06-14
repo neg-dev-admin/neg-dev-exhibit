@@ -9,22 +9,23 @@ import {
 export async function getStaticPaths() {
     const manifest = await fetchExhibitManifest();
     const enableGallerySales = manifest.exhibit_info?.enable_gallery_sales !== false;
+    const settings = manifest.exhibit_info?.settings;
 
     return manifest.albums.flatMap((album) => {
         return album.photos.map((photo) => {
             const nav = getPhotoNavigation(album, photo.lightroom_id);
             return {
                 params: { albumId: album.id, photoId: photo.lightroom_id },
-                props: { photo, nav, albumId: album.id, enableGallerySales },
+                props: { photo, nav, albumId: album.id, enableGallerySales, settings },
             };
         });
     });
 }
 
-const { photo, nav, albumId, enableGallerySales } = Astro.props;
+const { photo, nav, albumId, enableGallerySales, settings } = Astro.props;
 const displayTitle = photo.metadata?.title || photo.title || "Untitled";
 ---
 
 <Layout title={displayTitle}>
-    <PhotoDetail client:load photo={photo} nav={nav} albumId={albumId} enableGallerySales={enableGallerySales} />
+    <PhotoDetail client:load photo={photo} nav={nav} albumId={albumId} enableGallerySales={enableGallerySales} settings={settings} />
 </Layout>
