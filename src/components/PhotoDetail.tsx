@@ -66,6 +66,13 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
 
     const title = photo.metadata?.title || photo.title;
 
+    const hasMetadata = !!(
+        photo.metadata?.city ||
+        photo.metadata?.state ||
+        photo.metadata?.country ||
+        (photo.metadata?.quantity && photo.metadata?.quantity !== "∞")
+    );
+
     // Visualizer Logic: Dynamic Mat Calculation
     const matPaddingPercent = useMemo(() => {
         // Parse variant "8x10"
@@ -221,7 +228,7 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
                         <p className="text-sm font-light leading-relaxed text-foreground/80">{photo.metadata.caption}</p>
                     )}
 
-                    <div className="grid grid-cols-2 gap-4 py-4 border-y border-foreground/10">
+                    <div className={`grid grid-cols-2 gap-4 ${hasMetadata ? 'py-4 border-y border-foreground/10' : ''}`}>
                         <MetaItem label="City" value={photo.metadata?.city} />
                         <MetaItem label="State" value={photo.metadata?.state} />
                         <MetaItem label="Country" value={photo.metadata?.country} />
@@ -303,7 +310,7 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-background text-foreground relative overflow-hidden">
+        <div className="flex flex-col min-h-screen bg-background text-foreground relative">
 
             {/* Back to Album Link */}
             <a
@@ -331,21 +338,40 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
                 </a>
             )}
 
-            <div className="flex-grow flex items-start justify-center pt-20 p-12 w-full min-h-screen relative z-10 transition-all duration-500">
+            <div className="flex-grow flex flex-col items-center pt-24 pb-24 px-8 w-full z-10">
+                {/* 1. Display the item (photo) first */}
+                <div className="flex justify-center w-full mb-12">
+                    <div
+                        className={`relative transition-all duration-500 ease-in-out ${FRAME_STYLES.find(f => f.id === frameStyle)?.css || ''}`}
+                        style={{ transitionProperty: 'border, box-shadow' }}
+                    >
+                        {!isAlreadyFramed && frameStyle !== 'none' && (
+                            <div className="bg-white" style={{ padding: `${matPaddingPercent}%` }}>
+                                <div
+                                    className="relative overflow-hidden shadow-inner bg-neutral-100"
+                                    style={{
+                                        aspectRatio: cropAspectRatio,
+                                        maxHeight: '70vh', // Constrain height
+                                        maxWidth: '100%',
+                                        width: 'auto'
+                                    }}
+                                >
+                                    <img
+                                        src={photo.cover_url}
+                                        alt={title}
+                                        className="w-full h-full object-cover block"
+                                    />
+                                </div>
+                            </div>
+                        )}
 
-                <div
-                    className={`relative transition-all duration-500 ease-in-out ${FRAME_STYLES.find(f => f.id === frameStyle)?.css || ''}`}
-                    style={{ transitionProperty: 'border, box-shadow' }}
-                >
-                    {!isAlreadyFramed && frameStyle !== 'none' && (
-                        <div className="bg-white" style={{ padding: `${matPaddingPercent}%` }}>
+                        {(isAlreadyFramed || frameStyle === 'none') && (
                             <div
-                                className="relative overflow-hidden shadow-inner bg-neutral-100"
+                                className="relative overflow-hidden shadow-2xl"
                                 style={{
                                     aspectRatio: cropAspectRatio,
-                                    maxHeight: '60vh', // Constrain height
+                                    maxHeight: '80vh',
                                     maxWidth: '100%',
-                                    width: 'auto'
                                 }}
                             >
                                 <img
@@ -354,148 +380,102 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
                                     className="w-full h-full object-cover block"
                                 />
                             </div>
-                        </div>
-                    )}
-
-                    {(isAlreadyFramed || frameStyle === 'none') && (
-                        <div
-                            className="relative overflow-hidden shadow-2xl"
-                            style={{
-                                aspectRatio: cropAspectRatio,
-                                maxHeight: '75vh', // Allow slightly larger if unframed/pre-framed
-                                maxWidth: '100%',
-                            }}
-                        >
-                            <img
-                                src={photo.cover_url}
-                                alt={title}
-                                className="w-full h-full object-cover block"
-                            />
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
 
-            </div>
+                {/* 2. Followed by its metadata */}
+                <div className="w-full max-w-xl mx-auto flex flex-col gap-4 mb-8">
+                    <div className="flex flex-col gap-1">
+                        <h1 className="text-2xl font-light tracking-wide text-foreground uppercase">{title}</h1>
+                        {photo.metadata?.location && (
+                            <h2 className="text-sm font-light text-foreground/60">{photo.metadata.location}</h2>
+                        )}
+                    </div>
 
-            {/* Slide-Up Menu */}
-            {enableGallerySales && (
-                <div
-                    className={`fixed inset-x-0 bottom-0 bg-accent/80 backdrop-blur-md border-t border-foreground/10 transition-transform duration-500 ease-in-out z-40 pb-36 pt-8 px-8 flex justify-center ${isMenuOpen ? 'translate-y-0' : 'translate-y-[120%]'
-                        }`}
-                >
-                    <div className="w-full max-w-4xl flex flex-col gap-6 items-center justify-center">
-    
-                        <div className="flex flex-col w-full gap-8">
-    
-                            <div className="flex flex-col items-center">
-                                <label className="block text-[10px] uppercase tracking-widest text-foreground/60 mb-2">Print Size</label>
-                                <div className="flex flex-wrap justify-center gap-2">
-                                    {photo.pricing_matrix?.map((pm) => (
+                    {photo.metadata?.caption && (
+                        <p className="text-sm font-light leading-relaxed text-foreground/80">{photo.metadata.caption}</p>
+                    )}
+
+                    <div className={`grid grid-cols-2 gap-4 ${hasMetadata ? 'py-4 border-y border-foreground/10' : ''}`}>
+                        <MetaItem label="City" value={photo.metadata?.city} />
+                        <MetaItem label="State" value={photo.metadata?.state} />
+                        <MetaItem label="Country" value={photo.metadata?.country} />
+                        {photo.metadata?.quantity !== "∞" && (
+                            <MetaItem label="Limited Edition" value={photo.metadata?.quantity} />
+                        )}
+                    </div>
+                </div>
+
+                {/* 3. Followed by the prices / add to cart options */}
+                {enableGallerySales && (
+                    <div className="w-full max-w-xl mx-auto flex flex-col gap-6 bg-foreground/5 border border-foreground/10 p-6 rounded-lg mb-16">
+                        {/* Size Selector */}
+                        <div className="flex flex-col gap-2">
+                            <span className="text-[10px] uppercase tracking-widest text-foreground/60">Print Size</span>
+                            <div className="flex flex-wrap gap-2">
+                                {photo.pricing_matrix?.map((pm) => (
+                                    <button
+                                        key={pm.size}
+                                        onClick={() => setSelectedSizeKey(pm.size)}
+                                        className={`px-4 py-2 text-xs border transition-all duration-200 ${selectedSizeKey === pm.size
+                                            ? 'border-accent text-background bg-accent'
+                                            : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
+                                            }`}
+                                    >
+                                        {pm.size}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Frame Selector */}
+                        {isAlreadyFramed ? (
+                            <div className="py-2">
+                                <span className="text-xs font-light text-foreground/80">
+                                    This print comes framed - see photo
+                                </span>
+                            </div>
+                        ) : (
+                            <div className={`flex flex-col gap-2 transition-opacity duration-300 ${!isFrameableSize ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
+                                <span className="text-[10px] uppercase tracking-widest text-foreground/60">
+                                    {isFrameableSize ? 'Frame Style' : 'Framing Unavailable for Large Prints'}
+                                </span>
+                                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                                    {FRAME_STYLES.map(style => (
                                         <button
-                                            key={pm.size}
-                                            onClick={() => setSelectedSizeKey(pm.size)}
-                                            className={`px-4 py-2 text-xs border transition-all duration-200 ${selectedSizeKey === pm.size
+                                            key={style.id}
+                                            onClick={() => isFrameableSize && setFrameStyle(style.id)}
+                                            disabled={!isFrameableSize}
+                                            className={`px-4 py-2 text-xs border whitespace-nowrap transition-all duration-200 ${frameStyle === style.id
                                                 ? 'border-accent text-background bg-accent'
                                                 : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
                                                 }`}
                                         >
-                                            {pm.size}
+                                            {style.label}
                                         </button>
                                     ))}
                                 </div>
                             </div>
-    
-                            {/* Row 2: Frame Selector (Replaces simple Toggle) */}
-                            {isAlreadyFramed ? (
-                                <div className="flex flex-col items-center w-full py-2">
-                                    <span className="text-sm font-light text-foreground bg-accent/10 border border-accent/20 px-4 py-2 rounded">
-                                        This print comes framed - see photo
-                                    </span>
-                                </div>
-                            ) : (
-                                <div className={`flex flex-col items-center w-full transition-opacity duration-300 ${!isFrameableSize ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
-                                    <label className="block text-[10px] uppercase tracking-widest text-foreground/60 mb-2">
-                                        {isFrameableSize ? 'Frame Style' : 'Framing Unavailable for Large Prints'}
-                                    </label>
-                                    <div className="flex gap-2 overflow-x-auto max-w-full pb-2 no-scrollbar mask-linear-fade px-4">
-                                        {FRAME_STYLES.map(style => (
-                                            <button
-                                                key={style.id}
-                                                onClick={() => isFrameableSize && setFrameStyle(style.id)}
-                                                disabled={!isFrameableSize}
-                                                className={`px-4 py-2 text-xs border whitespace-nowrap transition-all duration-200 ${frameStyle === style.id
-                                                    ? 'border-accent text-background bg-accent'
-                                                    : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
-                                                    }`}
-                                            >
-                                                {style.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-    
-                            {/* Row 3: Add to Cart */}
-                            <div className="flex flex-col items-center w-full max-w-md mx-auto pt-4 gap-4">
-                                <div className="text-3xl font-light text-foreground">
-                                    {formattedPrice}
-                                </div>
-                                <button
-                                    onClick={handleAddToCart}
-                                    className="w-full bg-button/80 p-4 text-sm uppercase tracking-widest font-bold hover:bg-button transition-opacity shadow-lg"
-                                >
-                                    Add to Cart
-                                </button>
+                        )}
+
+                        {/* Price & Add to Cart */}
+                        <div className="flex flex-col gap-4 pt-4 border-t border-foreground/10">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-light text-foreground/60 uppercase tracking-wider">Total Price</span>
+                                <span className="text-3xl font-light text-foreground">{formattedPrice}</span>
                             </div>
-    
+                            <button
+                                onClick={handleAddToCart}
+                                className="w-full bg-button/85 py-4 text-sm uppercase tracking-widest font-bold hover:bg-button transition-colors shadow-lg"
+                            >
+                                Add to Cart
+                            </button>
                         </div>
                     </div>
-                </div>
-            )}
-    
-    
-    
-            {/* Sticky Bottom Stripe */}
-            <div className="flex md:flex-row flex-col fixed bottom-0 left-0 right-0 z-50 bg-accent/20 backdrop-blur-sm border-t border-foreground/20 py-6 px-8 flex justify-between items-center shadow-2xl">
-    
-                {/* Column 1: Metadata */}
-                <div className={`${isMenuOpen ? 'hidden md:flex' : 'flex'} flex-col md:flex-row items-center gap-8 overflow-x-auto no-scrollbar mask-linear-fade`}>
-                    <div className="flex flex-col">
-                        <h1 className="text-xl font-light tracking-wide text-foreground uppercase">{title}</h1>
-                        <h2 className="text-sm font-light  text-foreground/60">{photo.metadata?.location}</h2>
-                    </div>
-    
-                    <div className="flex flex-col">
-    
-                        {photo.metadata?.caption && <span className="text-xs text-foreground/60">{photo.metadata.caption}</span>}
-                    </div>
-    
-                    {/* Metadata Fields */}
-                    <div className="flex md:flex-row gap-8 border-l border-foreground/10">
-                        {/* Show "Framed" or "Print Only" status in strip */}
-    
-                        <MetaItem label="City" value={photo.metadata?.city} />
-                        <MetaItem label="State" value={photo.metadata?.state} />
-                        <MetaItem label="Country" value={photo.metadata?.country} />
-                        {photo.metadata?.quantity !== "∞" && <MetaItem label="Limited Edition" value={photo.metadata?.quantity} />}
-                    </div>
-                </div>
-    
-                {/* Column 2: Toggle Button */}
-                {enableGallerySales && (
-                    <div className="flex md:flex-shrink-0 p-4">
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className={`w-12 h-12 flex items-center justify-center rounded-full bg-button/80 hover:bg-button/90 transition-all duration-300 ${isMenuOpen ? 'rotate-45' : ''}`}
-                            aria-label="Toggle Menu"
-                        >
-                            <span className="text-2xl font-light leading-none relative top-[-1px]">+</span>
-                        </button>
-                    </div>
                 )}
-    
             </div>
-
-        </div >
+        </div>
     );
 }
+

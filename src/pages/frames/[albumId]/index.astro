@@ -25,8 +25,8 @@ const scrollClasses = showScrollOnMobile
     : "hidden";
 
 const gridClasses = showGridOnMobile
-    ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 w-full"
-    : "hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 w-full";
+    ? "grid grid-cols-1 sm:grid-cols-2 w-full md:flex md:flex-col md:gap-12 md:items-center"
+    : "hidden md:flex md:flex-col md:gap-12 md:items-center w-full";
 ---
 
 <Layout title={`SILVER STILL: ${album.album_name}`}>
@@ -57,7 +57,7 @@ const gridClasses = showGridOnMobile
                         <div class="relative overflow-hidden bg-neutral-950/20 shadow-2xl transition-transform duration-500 hover:scale-[1.01]">
                             <img
                                 src={photo.cover_url}
-                                alt={photo.title}
+                                alt={photo.metadata?.title || photo.title || "Untitled"}
                                 class="w-full h-auto object-contain max-h-[70vh] mx-auto block opacity-95 group-hover:opacity-100 transition-opacity duration-300"
                                 loading="lazy"
                             />
@@ -72,17 +72,17 @@ const gridClasses = showGridOnMobile
                 album.photos.map((photo) => (
                     <a
                         href={`/frames/${album.id}/${photo.lightroom_id}`}
-                        class="group block relative aspect-square bg-neutral-900 overflow-hidden"
+                        class="group block relative aspect-square bg-neutral-900 overflow-hidden md:aspect-auto md:bg-neutral-950/20 md:w-full md:max-w-2xl md:mx-auto md:shadow-2xl md:transition-transform md:duration-500 md:hover:scale-[1.01]"
                     >
                         <img
                             src={photo.cover_url}
-                            alt={photo.title}
-                            class="w-full h-full object-cover transition-all duration-700 ease-in-out group-hover:scale-105 group-hover:opacity-100 opacity-90"
+                            alt={photo.metadata?.title || photo.title || "Untitled"}
+                            class="w-full h-full object-cover transition-all duration-700 ease-in-out group-hover:scale-105 group-hover:opacity-100 opacity-90 md:h-auto md:object-contain md:max-h-[80vh] md:mx-auto md:block md:opacity-95 md:group-hover:opacity-100 md:group-hover:scale-100"
                             loading="lazy"
                         />
                         <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <p class="text-white text-sm font-light tracking-wide truncate">
-                                {photo.title}
+                                {photo.metadata?.title || photo.title || "Untitled"}
                             </p>
                         </div>
                     </a>
