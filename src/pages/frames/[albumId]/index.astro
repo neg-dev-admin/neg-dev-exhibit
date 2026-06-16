@@ -61,6 +61,14 @@ const gridClasses = showGridOnMobile
                                 class="w-full h-auto object-contain max-h-[70vh] mx-auto block opacity-95 group-hover:opacity-100 transition-opacity duration-300"
                                 loading="lazy"
                             />
+                            {photo.metadata?.status === "sold out" && (
+                                <div 
+                                    class="absolute top-4 left-4 z-10 px-2 py-0.5 text-[9px] font-bold tracking-widest uppercase border"
+                                    style="color: var(--color-background); background-color: var(--color-accent); border-color: var(--color-accent);"
+                                >
+                                    Sold Out
+                                </div>
+                            )}
                         </div>
                     </a>
                 ))}
@@ -80,6 +88,14 @@ const gridClasses = showGridOnMobile
                             class="w-full h-full object-cover transition-all duration-700 ease-in-out group-hover:scale-105 group-hover:opacity-100 opacity-90 md:h-auto md:object-contain md:max-h-[80vh] md:mx-auto md:block md:opacity-95 md:group-hover:opacity-100 md:group-hover:scale-100"
                             loading="lazy"
                         />
+                        {photo.metadata?.status === "sold out" && (
+                            <div 
+                                class="absolute top-4 left-4 z-10 px-2 py-0.5 text-[9px] font-bold tracking-widest uppercase border"
+                                style="color: var(--color-background); background-color: var(--color-accent); border-color: var(--color-accent);"
+                            >
+                                Sold Out
+                            </div>
+                        )}
                         <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <p class="text-white text-sm font-light tracking-wide truncate">
                                 {photo.metadata?.title || photo.title || "Untitled"}

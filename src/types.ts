@@ -36,7 +36,8 @@ export interface ExhibitPhoto {
         state?: string;
         country?: string;
         quantity?: string | number; // e.g. "8" or "∞"
-        status?: "available" | "nfs" | "sold" | "hidden";
+        soldCount?: number;
+        status?: "available" | "nfs" | "sold" | "hidden" | "sold out";
         width?: number;
         height?: number;
         is_framed?: boolean;

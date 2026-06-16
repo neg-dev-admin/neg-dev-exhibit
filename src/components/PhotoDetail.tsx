@@ -240,70 +240,83 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
 
                 {/* 3. Followed by the prices / add to cart options */}
                 {enableGallerySales && (
-                    <div className="w-full max-w-xl mx-auto flex flex-col gap-6 bg-foreground/5 border border-foreground/10 p-6 rounded-lg mb-16">
-                        {/* Size Selector */}
-                        <div className="flex flex-col gap-2">
-                            <span className="text-[10px] uppercase tracking-widest text-foreground/60">Print Size</span>
-                            <div className="flex flex-wrap gap-2">
-                                {photo.pricing_matrix?.map((pm) => (
-                                    <button
-                                        key={pm.size}
-                                        onClick={() => setSelectedSizeKey(pm.size)}
-                                        className={`px-4 py-2 text-xs border transition-all duration-200 ${selectedSizeKey === pm.size
-                                            ? 'border-accent text-background bg-accent'
-                                            : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
-                                            }`}
-                                    >
-                                        {pm.size}
-                                    </button>
-                                ))}
+                    photo.metadata?.status === "sold out" ? (
+                        <div className="w-full max-w-xl mx-auto flex flex-col gap-4 bg-foreground/5 border border-foreground/10 p-6 rounded-lg mb-16 text-center">
+                            <div className="py-8 flex flex-col gap-3 items-center justify-center">
+                                <span className="px-3 py-1 text-xs font-bold tracking-widest uppercase border bg-accent text-background border-accent">
+                                    Sold Out
+                                </span>
+                                <p className="text-sm font-light text-foreground/60 max-w-sm mt-2">
+                                    This limited edition print is sold out and no longer available for purchase.
+                                </p>
                             </div>
                         </div>
-
-                        {/* Frame Selector */}
-                        {isAlreadyFramed ? (
-                            <div className="py-2">
-                                <span className="text-xs font-light text-foreground/80">
-                                    This print comes framed - see photo
-                                </span>
-                            </div>
-                        ) : (
-                            <div className={`flex flex-col gap-2 transition-opacity duration-300 ${!isFrameableSize ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
-                                <span className="text-[10px] uppercase tracking-widest text-foreground/60">
-                                    {isFrameableSize ? 'Frame Style' : 'Framing Unavailable for Large Prints'}
-                                </span>
-                                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                                    {FRAME_STYLES.map(style => (
+                    ) : (
+                        <div className="w-full max-w-xl mx-auto flex flex-col gap-6 bg-foreground/5 border border-foreground/10 p-6 rounded-lg mb-16">
+                            {/* Size Selector */}
+                            <div className="flex flex-col gap-2">
+                                <span className="text-[10px] uppercase tracking-widest text-foreground/60">Print Size</span>
+                                <div className="flex flex-wrap gap-2">
+                                    {photo.pricing_matrix?.map((pm) => (
                                         <button
-                                            key={style.id}
-                                            onClick={() => isFrameableSize && setFrameStyle(style.id)}
-                                            disabled={!isFrameableSize}
-                                            className={`px-4 py-2 text-xs border whitespace-nowrap transition-all duration-200 ${frameStyle === style.id
+                                            key={pm.size}
+                                            onClick={() => setSelectedSizeKey(pm.size)}
+                                            className={`px-4 py-2 text-xs border transition-all duration-200 ${selectedSizeKey === pm.size
                                                 ? 'border-accent text-background bg-accent'
                                                 : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
                                                 }`}
                                         >
-                                            {style.label}
+                                            {pm.size}
                                         </button>
                                     ))}
                                 </div>
                             </div>
-                        )}
 
-                        {/* Price & Add to Cart */}
-                        <div className="flex flex-col gap-4 pt-4 border-t border-foreground/10">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm font-light text-foreground/60 uppercase tracking-wider">Total Price</span>
-                                <span className="text-3xl font-light text-foreground">{formattedPrice}</span>
+                            {/* Frame Selector */}
+                            {isAlreadyFramed ? (
+                                <div className="py-2">
+                                    <span className="text-xs font-light text-foreground/80">
+                                        This print comes framed - see photo
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className={`flex flex-col gap-2 transition-opacity duration-300 ${!isFrameableSize ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
+                                    <span className="text-[10px] uppercase tracking-widest text-foreground/60">
+                                        {isFrameableSize ? 'Frame Style' : 'Framing Unavailable for Large Prints'}
+                                    </span>
+                                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                                        {FRAME_STYLES.map(style => (
+                                            <button
+                                                key={style.id}
+                                                onClick={() => isFrameableSize && setFrameStyle(style.id)}
+                                                disabled={!isFrameableSize}
+                                                className={`px-4 py-2 text-xs border whitespace-nowrap transition-all duration-200 ${frameStyle === style.id
+                                                    ? 'border-accent text-background bg-accent'
+                                                    : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
+                                                    }`}
+                                            >
+                                                {style.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Price & Add to Cart */}
+                            <div className="flex flex-col gap-4 pt-4 border-t border-foreground/10">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-light text-foreground/60 uppercase tracking-wider">Total Price</span>
+                                    <span className="text-3xl font-light text-foreground">{formattedPrice}</span>
+                                </div>
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="w-full bg-button/85 py-4 text-sm uppercase tracking-widest font-bold hover:bg-button transition-colors shadow-lg"
+                                >
+                                    Add to Cart
+                                </button>
                             </div>
-                            <button
-                                onClick={handleAddToCart}
-                                className="w-full bg-button/85 py-4 text-sm uppercase tracking-widest font-bold hover:bg-button transition-colors shadow-lg"
-                            >
-                                Add to Cart
-                            </button>
                         </div>
-                    </div>
+                    )
                 )}
             </div>
         );
@@ -409,70 +422,83 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
 
                 {/* 3. Followed by the prices / add to cart options */}
                 {enableGallerySales && (
-                    <div className="w-full max-w-xl mx-auto flex flex-col gap-6 bg-foreground/5 border border-foreground/10 p-6 rounded-lg mb-16">
-                        {/* Size Selector */}
-                        <div className="flex flex-col gap-2">
-                            <span className="text-[10px] uppercase tracking-widest text-foreground/60">Print Size</span>
-                            <div className="flex flex-wrap gap-2">
-                                {photo.pricing_matrix?.map((pm) => (
-                                    <button
-                                        key={pm.size}
-                                        onClick={() => setSelectedSizeKey(pm.size)}
-                                        className={`px-4 py-2 text-xs border transition-all duration-200 ${selectedSizeKey === pm.size
-                                            ? 'border-accent text-background bg-accent'
-                                            : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
-                                            }`}
-                                    >
-                                        {pm.size}
-                                    </button>
-                                ))}
+                    photo.metadata?.status === "sold out" ? (
+                        <div className="w-full max-w-xl mx-auto flex flex-col gap-4 bg-foreground/5 border border-foreground/10 p-6 rounded-lg mb-16 text-center">
+                            <div className="py-8 flex flex-col gap-3 items-center justify-center">
+                                <span className="px-3 py-1 text-xs font-bold tracking-widest uppercase border bg-accent text-background border-accent">
+                                    Sold Out
+                                </span>
+                                <p className="text-sm font-light text-foreground/60 max-w-sm mt-2">
+                                    This limited edition print is sold out and no longer available for purchase.
+                                </p>
                             </div>
                         </div>
-
-                        {/* Frame Selector */}
-                        {isAlreadyFramed ? (
-                            <div className="py-2">
-                                <span className="text-xs font-light text-foreground/80">
-                                    This print comes framed - see photo
-                                </span>
-                            </div>
-                        ) : (
-                            <div className={`flex flex-col gap-2 transition-opacity duration-300 ${!isFrameableSize ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
-                                <span className="text-[10px] uppercase tracking-widest text-foreground/60">
-                                    {isFrameableSize ? 'Frame Style' : 'Framing Unavailable for Large Prints'}
-                                </span>
-                                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                                    {FRAME_STYLES.map(style => (
+                    ) : (
+                        <div className="w-full max-w-xl mx-auto flex flex-col gap-6 bg-foreground/5 border border-foreground/10 p-6 rounded-lg mb-16">
+                            {/* Size Selector */}
+                            <div className="flex flex-col gap-2">
+                                <span className="text-[10px] uppercase tracking-widest text-foreground/60">Print Size</span>
+                                <div className="flex flex-wrap gap-2">
+                                    {photo.pricing_matrix?.map((pm) => (
                                         <button
-                                            key={style.id}
-                                            onClick={() => isFrameableSize && setFrameStyle(style.id)}
-                                            disabled={!isFrameableSize}
-                                            className={`px-4 py-2 text-xs border whitespace-nowrap transition-all duration-200 ${frameStyle === style.id
+                                            key={pm.size}
+                                            onClick={() => setSelectedSizeKey(pm.size)}
+                                            className={`px-4 py-2 text-xs border transition-all duration-200 ${selectedSizeKey === pm.size
                                                 ? 'border-accent text-background bg-accent'
                                                 : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
                                                 }`}
                                         >
-                                            {style.label}
+                                            {pm.size}
                                         </button>
                                     ))}
                                 </div>
                             </div>
-                        )}
 
-                        {/* Price & Add to Cart */}
-                        <div className="flex flex-col gap-4 pt-4 border-t border-foreground/10">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm font-light text-foreground/60 uppercase tracking-wider">Total Price</span>
-                                <span className="text-3xl font-light text-foreground">{formattedPrice}</span>
+                            {/* Frame Selector */}
+                            {isAlreadyFramed ? (
+                                <div className="py-2">
+                                    <span className="text-xs font-light text-foreground/80">
+                                        This print comes framed - see photo
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className={`flex flex-col gap-2 transition-opacity duration-300 ${!isFrameableSize ? 'opacity-30 pointer-events-none grayscale' : ''}`}>
+                                    <span className="text-[10px] uppercase tracking-widest text-foreground/60">
+                                        {isFrameableSize ? 'Frame Style' : 'Framing Unavailable for Large Prints'}
+                                    </span>
+                                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                                        {FRAME_STYLES.map(style => (
+                                            <button
+                                                key={style.id}
+                                                onClick={() => isFrameableSize && setFrameStyle(style.id)}
+                                                disabled={!isFrameableSize}
+                                                className={`px-4 py-2 text-xs border whitespace-nowrap transition-all duration-200 ${frameStyle === style.id
+                                                    ? 'border-accent text-background bg-accent'
+                                                    : 'border-foreground/20 text-foreground/60 hover:border-foreground/40 hover:text-foreground'
+                                                    }`}
+                                            >
+                                                {style.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Price & Add to Cart */}
+                            <div className="flex flex-col gap-4 pt-4 border-t border-foreground/10">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-light text-foreground/60 uppercase tracking-wider">Total Price</span>
+                                    <span className="text-3xl font-light text-foreground">{formattedPrice}</span>
+                                </div>
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="w-full bg-button/85 py-4 text-sm uppercase tracking-widest font-bold hover:bg-button transition-colors shadow-lg"
+                                >
+                                    Add to Cart
+                                </button>
                             </div>
-                            <button
-                                onClick={handleAddToCart}
-                                className="w-full bg-button/85 py-4 text-sm uppercase tracking-widest font-bold hover:bg-button transition-colors shadow-lg"
-                            >
-                                Add to Cart
-                            </button>
                         </div>
-                    </div>
+                    )
                 )}
             </div>
         </div>
