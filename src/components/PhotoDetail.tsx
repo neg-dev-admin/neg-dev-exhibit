@@ -328,7 +328,7 @@ export default function PhotoDetail({ photo, nav, albumId, enableGallerySales = 
             {/* Back to Album Link */}
             <a
                 href={`/frames/${albumId}`}
-                className="fixed left-8 top-8 text-foreground/60 hover:text-foreground transition-colors uppercase text-xs tracking-widest z-30"
+                className="fixed left-4 sm:left-8 top-8 h-12 flex items-center text-foreground/60 hover:text-foreground transition-colors uppercase text-xs tracking-widest z-[100]"
             >
                 ← Back to Album
             </a>
